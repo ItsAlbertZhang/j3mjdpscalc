@@ -1,0 +1,34 @@
+{
+    "属性": {
+        "Vitality": "体质",
+        "Agility": "身法",
+        "Spirit": "根骨",
+        "Spunk": "元气",
+        "Strength": "力道",
+        "AttackPowerBase": "攻击",
+        "CriticalStrikeRate": "会心",
+        "CriticalDamagePowerPercent": "会心效果",
+        "OvercomePercent": "破防",
+        "StrainPercent": "无双",
+        "HastePercent": "加速",
+        "SurplusValue": "破招",
+        "MaxHealth": "气血",
+        "ShieldPercent": "防御",
+        "ToughnessDefCriticalPercent": "御劲",
+        "DecriticalDamagePercent": "化劲",
+        "DodgePercent": "闪避",
+        "ParryPercent": "招架",
+        "ParryValue": "招架效果",
+        "ActiveThreatCoefficient": "威胁",
+        "MeleeWeaponAttackSpeed": "武器攻击速度",
+        "MeleeWeaponDamage": "武器伤害基础",
+        "MeleeWeaponDamageRand": "武器伤害浮动"
+    },
+    "外阳阴混毒": {
+        "Physics": "外功",
+        "Solar": "阳性内功",
+        "Lunar": "阴性内功",
+        "Neutral": "混元内功",
+        "Poison": "毒性内功"
+    }
+}
