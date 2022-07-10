@@ -3,9 +3,11 @@
 if __name__ != '__main__':
     from . import 输入_通用格式处理
     from . import 输入_JX3BOX格式处理
+    from . import 参考_系数
 else:
     import 输入_通用格式处理
     import 输入_JX3BOX格式处理
+    import 参考_系数
 
 
 class 属性():
@@ -83,15 +85,16 @@ class 外阳阴混毒():
 
 
 class 玩家属性():
-    def __init__(self, arg={}) -> None:
-        # 这部分不使用装饰器定义的抽象属性, 因为没有为该属性定义 setter 方法
+    def __init__(self, 传入参数={}) -> None:
+        # 这部分不使用装饰器定义的抽象属性, 因为没有为该属性定义 setter 方法.
+        # 目的是在变更这些属性时必须调用对应的变动方法, 而不能直接使用 setter.
         基础属性 = ['体质', '元气', '根骨', '力道', '身法']
         for elem in 基础属性:
             setattr(self, '_'+elem, 属性())
         # 如果传入了参数, 那么按照参数进行属性设置
-        for key in arg:
+        for key in 传入参数:
             if key in 基础属性:
-                setattr(self, '_'+key, 属性(arg[key]))
+                setattr(self, '_'+key, 属性(传入参数[key]))
 
         进阶属性 = {'攻击': '外阳阴混毒', '会心': '外阳阴混毒', '会心效果': '外阳阴混毒', '破防': '外阳阴混毒', '无双': '单属性', '加速': '单属性', '破招': '单属性', '气血': '单属性', '防御': '外阳阴混毒', '御劲': '单属性', '化劲': '单属性', '闪避': '单属性', '招架': '单属性', '招架效果': '单属性', '威胁': '单属性', '武器攻击速度': '单属性', '武器伤害基础': '单属性', '武器伤害浮动': '单属性'}
         for key in 进阶属性:
@@ -100,13 +103,73 @@ class 玩家属性():
             if(进阶属性[key] == '单属性'):
                 setattr(self, key, 属性())
         # 如果传入了参数, 那么按照参数进行属性设置
-        for key in arg:
+        for key in 传入参数:
             if key in 进阶属性:
                 if(进阶属性[key] == '外阳阴混毒'):
-                    setattr(self, key, 外阳阴混毒(arg[key]))
+                    setattr(self, key, 外阳阴混毒(传入参数[key]))
                 if(进阶属性[key] == '单属性'):
-                    setattr(self, key, 属性(arg[key]))
-                # setattr(self, key, 属性(arg[key]))
+                    setattr(self, key, 属性(传入参数[key]))
+
+        # 进行传入数据的修正
+        self.修正传入数据(传入参数)
+
+    def 修正传入数据(self, 初始化参数={}) -> None:
+        # 修正传入数据, 将数值, 百分比, 1024 进制进行统一.
+        转换系数 = (参考_系数.转换系数().导出数据())
+        # 基础属性无需修正.
+        attr = '会心'
+        for key in 初始化参数[attr]:
+            基础 = getattr(getattr(getattr(self, attr), key), '基础')
+            if 基础 < 1:
+                setattr(getattr(getattr(self, attr), key), '基础', int(基础 * 1024))
+            if 基础 > 1024:
+                setattr(getattr(getattr(self, attr), key), '基础', int(基础 / 转换系数[attr] * 1024))
+        attr = '会心效果'
+        for key in 初始化参数[attr]:
+            基础 = getattr(getattr(getattr(self, attr), key), '基础')
+            if 基础 < 3:
+                setattr(getattr(getattr(self, attr), key), '基础', int(基础 * 1024))
+            if 基础 > 3072:
+                setattr(getattr(getattr(self, attr), key), '基础', int(基础 / 转换系数[attr] * 1024))
+        attr = '破防'
+        for key in 初始化参数[attr]:
+            基础 = getattr(getattr(getattr(self, attr), key), '基础')
+            if 基础 < 2:
+                setattr(getattr(getattr(self, attr), key), '基础', int(基础 * 1024))
+            if 基础 > 2048:
+                setattr(getattr(getattr(self, attr), key), '基础', int(基础 / 转换系数[attr] * 1024))
+        attr = '无双'
+        基础 = getattr(getattr(self, attr), '基础')
+        if 基础 < 1:
+            setattr(getattr(self, attr), '基础', int(基础 * 1024))
+        if 基础 > 1024:
+            setattr(getattr(self, attr), '基础', int(基础 / 转换系数[attr] * 1024))
+        attr = '加速'
+        基础 = getattr(getattr(self, attr), '基础')
+        if 基础 < 0.25:
+            setattr(getattr(self, attr), '基础', int(基础 * 1024))
+        if 基础 > 256:
+            setattr(getattr(self, attr), '基础', int(基础 / 转换系数[attr] * 1024))
+        attr = '御劲'
+        基础 = getattr(getattr(self, attr), '基础')
+        if 基础 < 0.25:
+            setattr(getattr(self, attr), '基础', int(基础 * 1024))
+        if 基础 > 256:
+            setattr(getattr(self, attr), '基础', int(基础 / 转换系数[attr] * 1024))
+        # 对于防御类 (御劲除外), 需要将其转换为数值. (x / (x + a)) = z, 则有 x = a * z / (1 - z)
+        attr = '防御'
+        for key in 初始化参数[attr]:
+            基础 = getattr(getattr(getattr(self, attr), key), '基础')
+            if 基础 < 2:
+                setattr(getattr(getattr(self, attr), key), '基础', int(转换系数[attr] * 基础 / (1 - 基础)))
+        attr = '闪避'
+        基础 = getattr(getattr(self, attr), '基础')
+        if 基础 < 1:
+            setattr(getattr(self, attr), '基础', int(转换系数[attr] * 基础 / (1 - 基础)))
+        # 对于破招, 要将破招系数乘至破招值
+        attr = '破招'
+        基础 = getattr(getattr(self, attr), '基础')
+        setattr(getattr(self, attr), '基础', int(转换系数[attr] * 基础))
 
     def 输出dict结果(self):
         基础属性 = ['体质', '元气', '根骨', '力道', '身法']
